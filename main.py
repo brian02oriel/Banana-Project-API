@@ -13,3 +13,7 @@ app.config["DEBUG"] = True
 def hello_world():
     return "Welcome to Banana Project API"
 
+@app.route('/api/classifier', methods=['POST', 'OPTIONS'])
+def get_image():
+    print(request.json)
+    return "IMAGE RECEIVED"
