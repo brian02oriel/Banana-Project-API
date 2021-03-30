@@ -15,5 +15,5 @@ def hello_world():
 
 @app.route('/api/classifier', methods=['POST', 'OPTIONS'])
 def get_image():
-    print(request.json)
+    print(request.json.get('img'))
     return "IMAGE RECEIVED"
