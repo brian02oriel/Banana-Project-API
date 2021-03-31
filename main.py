@@ -16,6 +16,6 @@ def hello_world():
 
 @app.route('/api/classifier', methods=['POST', 'OPTIONS'])
 def get_image():
-    base64 = request.json.get('img')
-    features = Decode_Extract_Features(base64)
+    base64_img = request.json.get('img')
+    features = Decode_Extract_Features(base64_img)
     return "IMAGE RECEIVED"
