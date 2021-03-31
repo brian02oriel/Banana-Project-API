@@ -2,6 +2,7 @@ import sys
 import flask
 from flask import request, jsonify
 from flask_cors import CORS, cross_origin
+from Classifier.image_features import Decode_Extract_Features
 
 app = flask.Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -15,5 +16,6 @@ def hello_world():
 
 @app.route('/api/classifier', methods=['POST', 'OPTIONS'])
 def get_image():
-    print(request.json.get('img'))
+    base64 = request.json.get('img')
+    features = Decode_Extract_Features(base64)
     return "IMAGE RECEIVED"
