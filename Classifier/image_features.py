@@ -14,8 +14,8 @@ def Decode_Extract_Features(base64_img):
     img = imread(io.BytesIO(base64.b64decode(base64_img)))
     img = cv2.GaussianBlur(img,(5,5),cv2.BORDER_DEFAULT)
     img = cv2.resize(img, (150, 150))
-    model_file = "./Models/ResNet-50-model.caffemodel"
-    deploy_prototxt = "./Models/ResNet-50-deploy.prototxt"
+    model_file = "/Models/ResNet-50-model.caffemodel"
+    deploy_prototxt = "/Models/ResNet-50-deploy.prototxt"
     net = cv2.dnn.readNetFromCaffe(deploy_prototxt, model_file)
     features = get_features(img, net)
     return features
