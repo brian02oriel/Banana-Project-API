@@ -20,7 +20,7 @@ def Decode_Extract_Features(base64_img):
     deploy_prototxt = "Classifier/Models/ResNet-50-deploy.prototxt"
     net = cv2.dnn.readNetFromCaffe(deploy_prototxt, model_file)
     features = get_features(img, net)
-    kmeans = load("KMEANS_MODEL.joblib")
+    kmeans = load("Classifier/Models/KMEANS_MODEL.joblib")
     kmeans_prediction = kmeans.predict(np.asarray(features))
     kmeans_centers = kmeans.cluster_centers_
     prediction_center = kmeans_centers[kmeans_prediction]
