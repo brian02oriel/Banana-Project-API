@@ -12,10 +12,13 @@ app.config["DEBUG"] = True
 
 @app.route('/', methods=['GET'])
 def hello_world():
+    print(request.json)
     return "Welcome to Banana Project API"
 
 @app.route('/api/classifier', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def get_image():
     base64_img = request.json.get('base64')
     features = Decode_Extract_Features(base64_img)
+    print("features: ", features.shape)
     return "IMAGE RECEIVED"
