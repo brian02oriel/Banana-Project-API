@@ -3,6 +3,8 @@ import io
 import cv2
 from imageio import imread
 import numpy as np
+from joblib import load
+from sklearn.metrics.pairwise import euclidean_distances
 
 def get_features(img, net):
   blob = cv2.dnn.blobFromImage(np.asarray(img), 1, (224, 224), (104, 117, 123))
@@ -18,4 +20,11 @@ def Decode_Extract_Features(base64_img):
     deploy_prototxt = "Classifier/Models/ResNet-50-deploy.prototxt"
     net = cv2.dnn.readNetFromCaffe(deploy_prototxt, model_file)
     features = get_features(img, net)
+    kmeans = load("KMEANS_MODEL.joblib")
+    kmeans_prediction = kmeans.predict(np.asarray(features))
+    kmeans_centers = kmeans.cluster_centers_
+    prediction_center = kmeans_centers[kmeans_prediction]
+    kmeans_distance_from_center = euclidean_distances([features], [prediction_center])
+    print(kmeans_prediction)
+    print(kmeans_distance_from_center)
     return features
