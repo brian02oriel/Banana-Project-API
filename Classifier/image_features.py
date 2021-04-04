@@ -3,9 +3,8 @@ import io
 import cv2
 from imageio import imread
 import numpy as np
-from joblib import load
-import pickle
 from sklearn.metrics.pairwise import euclidean_distances
+from sklearn.externals import joblib
 
 def get_features(img, net):
   blob = cv2.dnn.blobFromImage(np.asarray(img), 1, (224, 224), (104, 117, 123))
@@ -24,10 +23,7 @@ def Decode_Extract_Features(base64_img):
     print(features.shape)
     features = features.reshape(1, -1)
     print(features.shape)
-    print(features)
-    kmeans = load("Classifier/Models/KMEANS_MODEL.joblib")
-    #infile = open("Classifier/Models/KMEANS_MODEL.pkl", "rb")
-    #kmeans = pickle.load(infile)
+    kmeans = joblib.load("Classifier/Models/KMEANS_MODEL.pkl.pkl")
     kmeans_prediction = kmeans.predict(features)
     kmeans_centers = kmeans.cluster_centers_
     prediction_center = kmeans_centers[kmeans_prediction]
