@@ -24,7 +24,7 @@ def Decode_Extract_Features(base64_img):
     features = np.squeeze(features)
     print(features.shape)
     kmeans = load("Classifier/Models/KMEANS_MODEL.joblib")
-    kmeans_prediction = kmeans.predict(features)
+    kmeans_prediction = kmeans.predict([features])
     kmeans_centers = kmeans.cluster_centers_
     prediction_center = kmeans_centers[kmeans_prediction]
     kmeans_distance_from_center = euclidean_distances([features], [prediction_center])
