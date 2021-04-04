@@ -27,7 +27,7 @@ def Decode_Extract_Features(base64_img):
     #kmeans = joblib.load("Classifier/Models/KMEANS_MODEL.pkl")
     with open("Classifier/Models/KMEANS_MODEL.pkl", "rb") as file:
       kmeans = pickle.load(file)
-    kmeans_prediction = kmeans.predict(features, _n_threads=1)
+    kmeans_prediction = kmeans.predict(features)
     kmeans_centers = kmeans.cluster_centers_
     prediction_center = kmeans_centers[kmeans_prediction]
     kmeans_distance_from_center = euclidean_distances([features], [prediction_center])
