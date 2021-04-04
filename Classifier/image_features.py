@@ -21,8 +21,8 @@ def Decode_Extract_Features(base64_img):
     net = cv2.dnn.readNetFromCaffe(deploy_prototxt, model_file)
     features = get_features(img, net)
     print(features.shape)
-    #features = features.reshape(1, -1)
-    #print(features.shape)
+    features = features.reshape(-1, 1)
+    print(features.shape)
     kmeans = load("Classifier/Models/KMEANS_MODEL.joblib")
     kmeans_prediction = kmeans.predict(features)
     kmeans_centers = kmeans.cluster_centers_
