@@ -4,7 +4,7 @@ import cv2
 from imageio import imread
 import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
-from sklearn.externals import joblib
+import joblib
 
 def get_features(img, net):
   blob = cv2.dnn.blobFromImage(np.asarray(img), 1, (224, 224), (104, 117, 123))
