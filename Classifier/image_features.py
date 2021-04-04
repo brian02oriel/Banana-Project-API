@@ -22,7 +22,7 @@ def Decode_Extract_Features(base64_img):
     net = cv2.dnn.readNetFromCaffe(deploy_prototxt, model_file)
     features = get_features(img, net)
     print(features.shape)
-    features = features.reshape(1, -1)
+    features = np.ravel(features)
     print(features.shape)
     #kmeans = load("Classifier/Models/KMEANS_MODEL.joblib")
     with open("Classifier/Models/KMEANS_MODEL.pkl", "rb") as file:
