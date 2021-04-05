@@ -29,8 +29,7 @@ def Decode_Extract_Features(base64_img):
     kmeans_centers = kmeans.cluster_centers_
     prediction_center = kmeans_centers[kmeans_prediction]
     print("center: ", prediction_center)
-    kmeans_distance_from_center = euclidean_distances([features], [prediction_center])
-    print(kmeans_prediction)
+    kmeans_distance_from_center = euclidean_distances(features, prediction_center)
     print(kmeans_distance_from_center)
     return features
 
