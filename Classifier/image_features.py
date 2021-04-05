@@ -20,13 +20,15 @@ def Decode_Extract_Features(base64_img):
     deploy_prototxt = "Classifier/Models/ResNet-50-deploy.prototxt"
     net = cv2.dnn.readNetFromCaffe(deploy_prototxt, model_file)
     features = get_features(img, net)
-    print(features.shape)
+    features = features.reshape(-1)
     features = features.reshape(1, -1)
     print(features.shape)
-    kmeans = joblib.load("Classifier/Models/KMEANS_MODEL.pkl.pkl")
+    kmeans = joblib.load("Classifier/Models/KMEANS_MODEL.joblib")
     kmeans_prediction = kmeans.predict(features)
+    print("prediction: ",kmeans_prediction)
     kmeans_centers = kmeans.cluster_centers_
     prediction_center = kmeans_centers[kmeans_prediction]
+    print("center: ", prediction_center)
     kmeans_distance_from_center = euclidean_distances([features], [prediction_center])
     print(kmeans_prediction)
     print(kmeans_distance_from_center)
