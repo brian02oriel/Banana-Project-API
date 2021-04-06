@@ -22,14 +22,18 @@ def Decode_Extract_Features(base64_img):
     features = get_features(img, net)
     features = features.reshape(-1)
     features = features.reshape(1, -1)
-    print(features.shape)
     kmeans = joblib.load("Classifier/Models/KMEANS_MODEL.joblib")
     kmeans_prediction = kmeans.predict(features)
-    print("prediction: ",kmeans_prediction)
+    print("kmeans prediction: ",kmeans_prediction)
     kmeans_centers = kmeans.cluster_centers_
     prediction_center = kmeans_centers[kmeans_prediction]
-    print("center: ", prediction_center)
     kmeans_distance_from_center = euclidean_distances(features, prediction_center)
-    print(kmeans_distance_from_center)
+    print("distance: ", kmeans_distance_from_center)
+    knn = joblib.load("Classifier/Models/BANANA_RIPENESS_CLASSIFIER.joblib")
+    knn_prediction = knn.predict(features)
+    print("knn prediction: ", knn_prediction)
+    rf = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_RF_REGRESSOR.joblib")
+    rf_prediction = rf.predict([kmeans_distance_from_center[0], kmeans_prediction[0]])
+    print("rf prediction: ", rf_prediction)
     return features
 
