@@ -29,14 +29,16 @@ def Decode_Extract_Features(base64_img):
     prediction_center = kmeans_centers[kmeans_prediction]
     kmeans_distance_from_center = euclidean_distances(features, prediction_center)
     kmeans_distance_from_center = kmeans_distance_from_center.reshape(-1)
-    print("distance: ", kmeans_distance_from_center)
     knn = joblib.load("Classifier/Models/BANANA_RIPENESS_CLASSIFIER.joblib")
     knn_prediction = knn.predict(features)
-    print("knn prediction: ", knn_prediction)
+    print("knn prediction: ", knn_prediction[0])
     rf = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_RF_REGRESSOR.joblib")
     regression_params = [[kmeans_prediction[0], kmeans_distance_from_center[0]]]
-    print("regression params: ", regression_params)
     rf_prediction = rf.predict(regression_params)
-    print("rf prediction: ", rf_prediction)
+    mlp = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_MLP_REGRESSOR.joblib")
+    mlp_prediction = mlp.predict(regression_params)
+    gnb = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_GNB_REGRESSOR.joblib")
+    gnb_prediction = mlp.predict(regression_params)
+    print("RandomForest: ", rf_prediction, "MLP: ", mlp_prediction, "Gaussian Naives Bayes: ", gnb_prediction)
     return features
 
