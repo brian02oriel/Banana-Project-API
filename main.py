@@ -22,6 +22,6 @@ def hello_world():
 def get_image():
     print("getting...")
     base64_img = request.json.get('base64')
-    features = Decode_Extract_Features(base64_img)
-    print("features: ", features.shape)
-    return "IMAGE RECEIVED"
+    results = Decode_Extract_Features(base64_img)
+    print(results)
+    return jsonify(results)
