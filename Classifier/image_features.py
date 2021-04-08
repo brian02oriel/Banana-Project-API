@@ -44,9 +44,9 @@ def Decode_Extract_Features(base64_img):
     regressions = [rf_prediction, mlp_prediction, gnb_prediction]
     regressions.sort()
     response = {
-      "group": knn_prediction[0],
-      "days_higher": regressions[0],
-      "days_lower": regressions[2]
+      "group": str(knn_prediction[0]),
+      "days_higher": str(regressions[2]),
+      "days_lower": str(regressions[0])
     }
     return response
 
