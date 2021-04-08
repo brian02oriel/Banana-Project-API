@@ -40,11 +40,11 @@ def Decode_Extract_Features(base64_img):
     mlp_prediction = math.floor(mlp.predict(regression_params))
     gnb = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_GNB_REGRESSOR.joblib")
     gnb_prediction = math.floor(gnb.predict(regression_params))
-    #print("RandomForest: ", rf_prediction, "MLP: ", mlp_prediction, "Gaussian Naives Bayes: ", gnb_prediction)
+    print("RandomForest: ", rf_prediction, "MLP: ", mlp_prediction, "Gaussian Naives Bayes: ", gnb_prediction)
     regressions = [rf_prediction, mlp_prediction, gnb_prediction]
     regressions.sort()
     response = {
-      "group": knn_prediction,
+      "group": knn_prediction[0],
       "days_higher": regressions[0],
       "days_lower": regressions[2]
     }
