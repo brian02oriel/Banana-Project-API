@@ -21,7 +21,8 @@ def hello_world():
 @cross_origin()
 def get_image():
     print("getting...")
+    #print(request.json.get('base64'))
     base64_img = request.json.get('base64')
     results = Decode_Extract_Features(base64_img)
-    print(results)
+    print("has results...")
     return jsonify(results)
