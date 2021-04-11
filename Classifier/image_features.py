@@ -38,10 +38,10 @@ def Decode_Extract_Features(base64_img):
     rf_prediction = math.floor(rf.predict(regression_params))
     mlp = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_MLP_REGRESSOR.joblib")
     mlp_prediction = math.floor(mlp.predict(regression_params))
-    gnb = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_GNB_REGRESSOR.joblib")
-    gnb_prediction = math.floor(gnb.predict(regression_params))
-    print("RandomForest: ", rf_prediction, "MLP: ", mlp_prediction, "Gaussian Naives Bayes: ", gnb_prediction)
-    regressions = [rf_prediction, mlp_prediction, gnb_prediction]
+    svr = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_SVR_REGRESSOR.joblib")
+    svr_prediction = math.floor(svr.predict(regression_params))
+    print("RandomForest: ", rf_prediction, "MLP: ", mlp_prediction, "SVR: ", svr_prediction)
+    regressions = [rf_prediction, mlp_prediction, svr_prediction]
     regressions.sort()
     response = {
       "group": str(knn_prediction[0]),
