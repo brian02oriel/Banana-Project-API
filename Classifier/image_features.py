@@ -6,7 +6,10 @@ import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
 import joblib
 import math
-from LocalBinaryPatterns import LocalBinaryPatterns
+import importlib
+
+LocalBinaryPatterns = importlib.import_module("LocalBinaryPatterns")
+
 
 def get_features(img, net):
   blob = cv2.dnn.blobFromImage(np.asarray(img), 1, (224, 224), (104, 117, 123))
