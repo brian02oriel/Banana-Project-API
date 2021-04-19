@@ -14,16 +14,16 @@ def get_features(img, net):
   preds = net.forward(outputName='pool5')
   return preds[0]
 
-def check_banana(input_image):
-  radius = 3
-  no_points = 8 * radius
-  desc = LocalBinaryPatterns(no_points, radius)
-  image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
-  hist = desc.describe(image)
-  hist = np.array(hist)
-  model = joblib.load("Classifier/Models/IS_BANANA_MODEL.joblib")
-  prediction = model.predict(hist.reshape(1, -1))
-  return prediction
+#def check_banana(input_image):
+#  radius = 3
+#  no_points = 8 * radius
+#  desc = LocalBinaryPatterns(no_points, radius)
+#  image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
+#  hist = desc.describe(image)
+#  hist = np.array(hist)
+#  model = joblib.load("Classifier/Models/IS_BANANA_MODEL.joblib")
+#  prediction = model.predict(hist.reshape(1, -1))
+#  return prediction
 
 
 
