@@ -29,11 +29,11 @@ def check_banana(input_image):
 
 def Decode_Extract_Features(base64_img):
   img = imread(io.BytesIO(base64.b64decode(base64_img)))
-  is_banana = check_banana(img)
-  if(is_banana):
-    print("IS BANANA")
-  else:
-    print("NOT BANANA")
+  #is_banana = check_banana(img)
+  #if(is_banana):
+  #  print("IS BANANA")
+  #else:
+  #  print("NOT BANANA")
   img = cv2.GaussianBlur(img,(5,5),cv2.BORDER_DEFAULT)
   img = cv2.resize(img, (150, 150))
   model_file = "Classifier/Models/ResNet-50-model.caffemodel"
