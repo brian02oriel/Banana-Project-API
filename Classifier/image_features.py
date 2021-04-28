@@ -42,22 +42,22 @@ def Decode_Extract_Features(base64_img):
   features = get_features(img, net)
   features = features.reshape(-1)
   features = features.reshape(1, -1)
-  kmeans = joblib.load("Classifier/Models/KMEANS_MODEL.joblib")
+  kmeans = joblib.load("Classifier/Models/KMEANS_MODEL_1.joblib")
   kmeans_prediction = kmeans.predict(features)
   print("kmeans prediction: ",kmeans_prediction[0])
   kmeans_centers = kmeans.cluster_centers_
   prediction_center = kmeans_centers[kmeans_prediction]
   kmeans_distance_from_center = euclidean_distances(features, prediction_center)
   kmeans_distance_from_center = kmeans_distance_from_center.reshape(-1)
-  knn = joblib.load("Classifier/Models/BANANA_RIPENESS_CLASSIFIER.joblib")
+  knn = joblib.load("Classifier/Models/BANANA_RIPENESS_CLASSIFIER_1.joblib")
   knn_prediction = knn.predict(features)
   print("knn prediction: ", knn_prediction[0])
-  rf = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_RF_REGRESSOR.joblib")
+  rf = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_RF_REGRESSOR_1.joblib")
   regression_params = [[knn_prediction[0], kmeans_distance_from_center[0]]]
   rf_prediction = math.floor(rf.predict(regression_params))
-  mlp = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_MLP_REGRESSOR.joblib")
+  mlp = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_MLP_REGRESSOR_1.joblib")
   mlp_prediction = math.floor(mlp.predict(regression_params))
-  svr = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_SVR_REGRESSOR.joblib")
+  svr = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_SVR_REGRESSOR_1.joblib")
   svr_prediction = math.floor(svr.predict(regression_params))
   print("RandomForest: ", rf_prediction, "MLP: ", mlp_prediction, "SVR: ", svr_prediction)
   regressions = [rf_prediction, mlp_prediction, svr_prediction]
