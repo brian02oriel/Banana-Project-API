@@ -14,56 +14,58 @@ def get_features(img, net):
   preds = net.forward(outputName='pool5')
   return preds[0]
 
-#def check_banana(input_image):
-#  radius = 3
-#  no_points = 8 * radius
-#  desc = LocalBinaryPatterns(no_points, radius)
-#  image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
-#  hist = desc.describe(image)
-#  hist = np.array(hist)
-#  model = joblib.load("Classifier/Models/IS_BANANA_MODEL.joblib")
-#  prediction = model.predict(hist.reshape(1, -1))
-#  return prediction
+def check_banana(input_image):
+  radius = 3
+  no_points = 8 * radius
+  desc = LocalBinaryPatterns(no_points, radius)
+  image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
+  hist = desc.describe(image)
+  hist = np.array(hist)
+  model = joblib.load("Classifier/Models/Banana_bin_classifier.joblib")
+  prediction = model.predict(hist.reshape(1, -1))
 
+  return prediction
+
+def get_features_rgb(src):
+    src_row1 = cv2.hconcat([src, src, src, src])
+    src_row2 = cv2.hconcat([src, src, src, src])
+    src_row3 = cv2.hconcat([src, src, src, src])
+    src_row4 = cv2.hconcat([src, src, src, src])
+    src = cv2.vconcat([src_row1, src_row2, src_row3, src_row4])
+    src_count = src.size
+    histSize = 256
+    histRange = (0, 256)
+    accumulate = False
+    b_hist = cv2.calcHist(src, [0], None, [histSize], histRange, accumulate=accumulate)
+    g_hist = cv2.calcHist(src, [1], None, [histSize], histRange, accumulate=accumulate)
+    r_hist = cv2.calcHist(src, [2], None, [histSize], histRange, accumulate=accumulate)
+    b_hp = [b * 100 / src_count for b in b_hist]
+    g_hp = [g * 100 / src_count for g in g_hist]
+    r_hp = [r * 100 / src_count for r in r_hist]
+    return b_hp, g_hp, r_hp
 
 
 def Decode_Extract_Features(base64_img):
   img = imread(io.BytesIO(base64.b64decode(base64_img)))
-  #is_banana = check_banana(img)
-  #if(is_banana):
-  #  print("IS BANANA")
-  #else:
-  #  print("NOT BANANA")
-  img = cv2.GaussianBlur(img,(5,5),cv2.BORDER_DEFAULT)
   img = cv2.resize(img, (150, 150))
-  model_file = "Classifier/Models/ResNet-50-model.caffemodel"
-  deploy_prototxt = "Classifier/Models/ResNet-50-deploy.prototxt"
-  net = cv2.dnn.readNetFromCaffe(deploy_prototxt, model_file)
-  features = get_features(img, net)
-  features = features.reshape(-1)
-  features = features.reshape(1, -1)
-  kmeans = joblib.load("Classifier/Models/KMEANS_MODEL_1.joblib")
-  kmeans_prediction = kmeans.predict(features)
-  print("kmeans prediction: ",kmeans_prediction[0])
-  kmeans_centers = kmeans.cluster_centers_
-  prediction_center = kmeans_centers[kmeans_prediction]
-  kmeans_distance_from_center = euclidean_distances(features, prediction_center)
-  kmeans_distance_from_center = kmeans_distance_from_center.reshape(-1)
-  knn = joblib.load("Classifier/Models/BANANA_RIPENESS_CLASSIFIER_1.joblib")
-  knn_prediction = knn.predict(features)
-  print("knn prediction: ", knn_prediction[0])
-  rf = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_RF_REGRESSOR_1.joblib")
-  regression_params = [[knn_prediction[0], kmeans_distance_from_center[0]]]
-  rf_prediction = math.floor(rf.predict(regression_params))
-  mlp = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_MLP_REGRESSOR_1.joblib")
-  mlp_prediction = math.floor(mlp.predict(regression_params))
-  svr = joblib.load("Classifier/Models/BANANA_REMAINING_DAYS_SVR_REGRESSOR_1.joblib")
-  svr_prediction = math.floor(svr.predict(regression_params))
+  is_banana = check_banana(img)
+  if(is_banana):
+    print("IS BANANA")
+  else:
+    print("NOT BANANA")
+  
+  b, g, r = get_features_rgb(img)
+  features = r + g + b
+  rf = joblib.load("Classifier/Models/rf_regressor.joblib")
+  rf_prediction = math.floor(rf.predict(features))
+  mlp = joblib.load("Classifier/Models/mlp_regressor.joblib")
+  mlp_prediction = math.floor(mlp.predict(features))
+  svr = joblib.load("Classifier/Models/svr_regressor.joblib")
+  svr_prediction = math.floor(svr.predict(features))
   print("RandomForest: ", rf_prediction, "MLP: ", mlp_prediction, "SVR: ", svr_prediction)
   regressions = [rf_prediction, mlp_prediction, svr_prediction]
   regressions.sort()
   response = {
-    "group": str(kmeans_prediction[0]),
     "days_higher": str(regressions[2]),
     "days_lower": str(regressions[0])
   }
