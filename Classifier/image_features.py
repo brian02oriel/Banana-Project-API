@@ -6,20 +6,27 @@ import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
 import joblib
 import math
-#from Classifier.LocalBinaryPattern import *
+from Classifier.LocalBinaryPattern import *
 
-def get_features(img, net):
-  blob = cv2.dnn.blobFromImage(np.asarray(img), 1, (224, 224), (104, 117, 123))
-  net.setInput(blob)
-  preds = net.forward(outputName='pool5')
-  return preds[0]
+def binMask(img):
+    img = cv2.resize(img, (350, 350))
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (5, 5), cv2.BORDER_DEFAULT)
+    canny = cv2.Canny(blur, 50, 150)
+    pts = np.argwhere(canny > 0)
+    y1, x1 = pts.min(axis=0)
+    y2, x2 = pts.max(axis=0)
+    cropped = img[y1:y2, x1:x2]
+   
+    return cropped
 
-def check_banana(input_image):
+def check_banana(img):
   radius = 3
   no_points = 8 * radius
   desc = LocalBinaryPatterns(no_points, radius)
-  image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
-  hist = desc.describe(image)
+  img = cv2.resize(img, (150, 150))
+  img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+  hist = desc.describe(img)
   hist = np.array(hist)
   model = joblib.load("Classifier/Models/Banana_bin_classifier.joblib")
   prediction = model.predict(hist.reshape(1, -1))
@@ -27,6 +34,7 @@ def check_banana(input_image):
   return prediction
 
 def get_features_rgb(src):
+    src = cv2.resize(src, (150, 150))
     src_row1 = cv2.hconcat([src, src, src, src])
     src_row2 = cv2.hconcat([src, src, src, src])
     src_row3 = cv2.hconcat([src, src, src, src])
@@ -47,15 +55,24 @@ def get_features_rgb(src):
 
 def Decode_Extract_Features(base64_img):
   img = imread(io.BytesIO(base64.b64decode(base64_img)))
-  img = cv2.resize(img, (150, 150))
+  img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+  img = binMask(img)
+  #img = cv2.resize(img, (350, 350))
+  #cv2.imshow("input cropped", img)
+  #cv2.waitKey(0)
+  #cv2.destroyAllWindows()
+  
   is_banana = check_banana(img)
   if(is_banana):
     print("IS BANANA")
   else:
     print("NOT BANANA")
   
-  b, g, r = get_features_rgb(img)
-  features = r + g + b
+  r, g, b = get_features_rgb(img)
+  features = b + g + r
+  features = np.array(features)
+  features = np.squeeze(features)
+  features = features.reshape(1, -1)
   rf = joblib.load("Classifier/Models/rf_regressor.joblib")
   rf_prediction = math.floor(rf.predict(features))
   mlp = joblib.load("Classifier/Models/mlp_regressor.joblib")
@@ -63,11 +80,11 @@ def Decode_Extract_Features(base64_img):
   svr = joblib.load("Classifier/Models/svr_regressor.joblib")
   svr_prediction = math.floor(svr.predict(features))
   print("RandomForest: ", rf_prediction, "MLP: ", mlp_prediction, "SVR: ", svr_prediction)
-  regressions = [rf_prediction, mlp_prediction, svr_prediction]
+  regressions = [rf_prediction, svr_prediction]
   regressions.sort()
   response = {
-    "days_higher": str(regressions[2]),
-    "days_lower": str(regressions[0])
+    "days_higher": regressions[1],
+    "days_lower": regressions[0]
   }
   return response
 
