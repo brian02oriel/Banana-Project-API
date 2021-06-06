@@ -8,11 +8,24 @@ import joblib
 import math
 from Classifier.LocalBinaryPattern import *
 
+def get_image_center_sample(img):
+  box_w = 65
+  box_h = 65
+  (h, w) = img.shape[:2]
+  (cX, cY) = (w // 2, h // 2)
+  x = cX - box_w/2
+  y = cY - box_h/2
+  crop_img = img[int(y):int(y+box_h), int(x):int(x+box_w)]
+  return crop_img
+
 def binMask(img):
     img = cv2.resize(img, (350, 350))
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (5, 5), cv2.BORDER_DEFAULT)
     canny = cv2.Canny(blur, 50, 150)
+    cv2.imshow("canny", canny)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     pts = np.argwhere(canny > 0)
     y1, x1 = pts.min(axis=0)
     y2, x2 = pts.max(axis=0)
@@ -40,6 +53,9 @@ def get_features_rgb(src):
     src_row3 = cv2.hconcat([src, src, src, src])
     src_row4 = cv2.hconcat([src, src, src, src])
     src = cv2.vconcat([src_row1, src_row2, src_row3, src_row4])
+    cv2.imshow("input framed", src)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     src_count = src.size
     histSize = 256
     histRange = (0, 256)
@@ -55,32 +71,36 @@ def get_features_rgb(src):
 
 def Decode_Extract_Features(base64_img):
   img = imread(io.BytesIO(base64.b64decode(base64_img)))
+  print(img.size)
+  img = cv2.resize(img, (300, 400))
   img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-  img = binMask(img)
-  #img = cv2.resize(img, (350, 350))
-  #cv2.imshow("input cropped", img)
-  #cv2.waitKey(0)
-  #cv2.destroyAllWindows()
-  
   is_banana = check_banana(img)
   if(is_banana):
     print("IS BANANA")
   else:
     print("NOT BANANA")
   
+  img = binMask(img)
+  #cv2.imshow("input", img)
+
+  #img = get_image_center_sample(img)
+  #cv2.imshow("input cropped", img)
+  #cv2.waitKey(0)
+  #cv2.destroyAllWindows()
+
   r, g, b = get_features_rgb(img)
   features = b + g + r
   features = np.array(features)
   features = np.squeeze(features)
   features = features.reshape(1, -1)
-  rf = joblib.load("Classifier/Models/rf_regressor.joblib")
+  rf = joblib.load("Classifier/Models/rf_regressor_no_rotation.joblib")
   rf_prediction = math.floor(rf.predict(features))
-  mlp = joblib.load("Classifier/Models/mlp_regressor.joblib")
+  mlp = joblib.load("Classifier/Models/mlp_regressor_no_rotation.joblib")
   mlp_prediction = math.floor(mlp.predict(features))
-  svr = joblib.load("Classifier/Models/svr_regressor.joblib")
+  svr = joblib.load("Classifier/Models/svr_regressor_no_rotation.joblib")
   svr_prediction = math.floor(svr.predict(features))
   print("RandomForest: ", rf_prediction, "MLP: ", mlp_prediction, "SVR: ", svr_prediction)
-  regressions = [rf_prediction, svr_prediction]
+  regressions = [rf_prediction, svr_prediction, mlp_prediction]
   regressions.sort()
   response = {
     "days_higher": regressions[1],
