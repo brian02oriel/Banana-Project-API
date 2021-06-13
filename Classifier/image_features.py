@@ -103,8 +103,8 @@ def Decode_Extract_Features(base64_img):
   regressions = [rf_prediction, svr_prediction, mlp_prediction]
   regressions.sort()
   response = {
-    "days_higher": regressions[1],
-    "days_lower": regressions[0]
+    "days_higher": regressions[1] if regressions[1] > 0 else 0,
+    "days_lower": regressions[0] if regressions[0] > 0 else 0
   }
   return response
 
