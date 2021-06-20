@@ -23,9 +23,9 @@ def binMask(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (5, 5), cv2.BORDER_DEFAULT)
     canny = cv2.Canny(blur, 50, 150)
-    cv2.imshow("canny", canny)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.imshow("canny", canny)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
     pts = np.argwhere(canny > 0)
     y1, x1 = pts.min(axis=0)
     y2, x2 = pts.max(axis=0)
@@ -53,9 +53,9 @@ def get_features_rgb(src):
     src_row3 = cv2.hconcat([src, src, src, src])
     src_row4 = cv2.hconcat([src, src, src, src])
     src = cv2.vconcat([src_row1, src_row2, src_row3, src_row4])
-    cv2.imshow("input framed", src)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.imshow("input framed", src)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
     src_count = src.size
     histSize = 256
     histRange = (0, 256)
@@ -103,7 +103,7 @@ def Decode_Extract_Features(base64_img):
   regressions = [rf_prediction, svr_prediction, mlp_prediction]
   regressions.sort()
   response = {
-    "days_higher": regressions[1] if regressions[1] > 0 else 0,
+    "days_higher": regressions[2] if regressions[2] > 0 else 0,
     "days_lower": regressions[0] if regressions[0] > 0 else 0
   }
   return response
